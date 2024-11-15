@@ -31,10 +31,11 @@ int moistAO = 0;
 int lightAO = 0;
 
 
+
 /*********************************************************/
 void setup()
 {
-  pinMode(pinButton, INPUT);
+  // pinMode(pinButton, INPUT);
   pinMode(pinLed, OUTPUT);
   // pinMode(pinLight, INPUT);
   pinMode(pinMoistAnalog, INPUT);
@@ -46,28 +47,49 @@ void setup()
   Serial.begin(9600);
 }
 
-
 /******************************************************** */
 void loop() 
 {
-    buttonState = digitalRead(pinButton);
-    if (buttonState != lastButtonState){
-      lastDebounce = millis();
-    }
+    if (Serial.available() > 0) {
+      //Read data packet (command) over serial
+      String command = Serial.readStringUntil('\n');
+      lcd.setCursor(0, 0);
+      lcd.clear();
+      lcd.print(command);
 
-    if ((millis() - lastDebounce) > debounceDelay){
-      buttonState = digitalRead(pinButton);
-      if (buttonState == HIGH && lastButtonState == LOW){
+      if (command == "CMD: SEND DATA"){
+        lcd.clear();
+        lcd.print("still here");
+      }
+
+      if (command == "CMD: CHECK READY"){
+        Serial.println("READY");
+        delay(100);
+      }
+
+      if (command == "CMD: RESET BUFFER"){
+        while (Serial.available() > 0) {
+          Serial.read();
+        }
+        delay(50);
+        Serial.flush();
+      }
+
+      if (command == "CMD: SELECT"){
+        //Read second data packet which will be the select address
+        String address = Serial.readStringUntil('\n');
+
+        //Logic for pin select on MUX
+
+      }
+
+      if (command == "CMD: SEND DATA"){
         digitalWrite(pinLed, HIGH);
 
         // DHT11 Read, Temperature, Humidity
         int dhtRead = DHT.read(pinTemp);
         temperature =  DHT.temperature;
         humidity = DHT.humidity;
-
-        // //LM393 w/ Photodiode, High/Low
-        // int lmRead = digitalRead(pinLight);
-        // Serial.println((String)"Light Reading: " + lmRead);
 
         //Moisture Sensor
         moistDO = digitalRead(pinMoistDigital);
@@ -89,22 +111,16 @@ void loop()
         Serial.println();
 
         //Display on LCD1602 last reading during last button toggle
-        //Nore that no I2C scanning was needed as the LCD I2C chip is tied directly to the dedicated SDA/SLC Uno pins
+        //Note that no I2C scanning was needed as the LCD I2C chip is tied directly to the dedicated SDA/SLC Uno pins
         lcd.setCursor(0, 0);
         lcd.print("T: " + String(DHT.temperature) + " / RH: " + String(DHT.humidity));
         lcd.setCursor(0, 1);
         lcd.print("L: " + String(lightAO) + " / M: " + String(moistAO)); 
 
-        
         digitalWrite(pinLed, LOW);
       }
     }
-    lastButtonState = buttonState;
+
 }
 /************************************************************/
-
-// put function definitions here:
-// int myFunction(int x, int y) {
-//   return x + y;
-// }
-// include the library code 
+/*Function*/
