@@ -1,0 +1,46 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Component Diagram
+skinparam wrapWidth 200
+skinparam maxMessageSize 200
+
+'LAYOUT_WITH_LEGEND()
+
+Person_Ext(user, "User", "User clicks <u><b>sensorSetID</b></u> of interest")
+
+'Dash webapp
+System_Boundary(webapp, "Dash WebApp"){
+    Container(ui, "Dash/Flask UI", "Displays Live Sensor Data and Cam Image")
+    Container(agg, "Aggregator and Service", "Python service communicating to MCUs and Databases")
+}
+
+'Microcontrollers
+System_Boundary(mcu, "Microcontrollers"){
+    Container(uno1, "Uno1", "Sensors for Plant 1")
+    Container(uno2, "Uno2", "Sensors for Plant 2")
+    Container(cam1, "esp32-cam1","Camera for Plant 1")
+    Container(cam2, "esp32-cam2","Camera for Plant 2")
+}
+
+'External APIs
+System_Boundary(api, "Internal / External APIs (TBD)"){
+    Container(tbd1, "TBD external","Possibly explore ML APIs")
+    Container(tbd3, "TBD internal","Possibly create service for watering plants")
+}
+
+'AWS backend and pipeline
+System_Boundary(db, "TBD Databse"){
+    Container(pg, "Database", "PostgresQL", "Sensor data and image storage")
+}
+
+' fight the layout engine
+'auth -[hidden]right-> shop
+'skinparam linetype ortho
+BiRel_R(user, ui, "Click <b>muxSelect</b>", "Selects which Plant to view")
+Rel(ui, agg,"Provides \n var: muxSelect")
+Rel(agg, ui,"Updates Dash objects")
+BiRel(agg, api, "Sends GET or POST requests to APIs", "Returns [TBD]")
+Rel(agg, db,"Post data to database", "")
+Rel(agg, mcu, "Read data over USB", "Temperature, Humidity, Light Level, Moisture, Image File" )
+@enduml

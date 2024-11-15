@@ -67,6 +67,7 @@ body {
 
 /* image container */
 .image-container {
+    color: #388e3c;
     width: 45%;
     text-align: center;
 }
