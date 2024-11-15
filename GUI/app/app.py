@@ -71,7 +71,7 @@ def request_data(serialPort):
         logger.info("Serial Port line is empty")
     return None
 
-
+# Function to clear serial buffer for debugging purposes
 def reset_serial_buffer(serialPort):
     logger.info(f"Function: flush_both_ends")
     serialPort.reset_input_buffer()
@@ -108,8 +108,6 @@ if __name__ == "__main__":
     baudRate = 9600
     serialPortArd = initialize_board_connection(comPort, baudRate, delay=3, timeout=5)
     # select_address(ardPort, "TBD")
-    # data = request_data(serialPortArd)
-    # data = request_data(serialPortArd)
     # data = request_data(serialPortArd)
 
     # Run flask

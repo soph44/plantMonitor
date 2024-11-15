@@ -7,7 +7,6 @@ This project is still WIP. The goal is to package everything into a set of modul
 This project is a HW/SW project.
 
 The HW consists of a set of microcontrollers, sensors, and cameras to monitor the livelihood of house plants. The number of microcontrollers per plant is minimized by multiplexing several sets to sensors to a each sensor microcontroller. This gives flexibility to the number of sensor sets (plants) that can be monitored at the same time.
-
 The SW comprises of a front end dashboard display of dynamic sensor data and imaging of each plant. Data is transmitted from the microcontrollers as serial data over USB. The data and images will also be posted to a database for later correlation analysis.
 
 Future Consideration:
