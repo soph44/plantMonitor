@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Data Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header class="header">
+        <h1>Plant Monitoring System</h1>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        
+        <!-- Left Column: Sensor Data -->
+        <div class="sensor-data">
+            <h2>Sensor Data</h2>
+            <div class="sensor-box" id="temperature">Temperature: {{ sensor_data.temperature }}°C</div>
+            <div class="sensor-box" id="humidity">Humidity: {{ sensor_data.humidity }}%</div>
+            <div class="sensor-box" id="moisture">Moisture: {{ sensor_data.moisture }}%</div>
+            <div class="sensor-box" id="light">Light: {{ sensor_data.light }}%</div>
+        </div>
+
+        <!-- Right Column: Dynamic Image -->
+        <div class="image-container">
+            <img id="dynamic-image" src="./static/img-default.png" alt="Live Plant Cam">
+        </div>
+
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <p>Contact @ Sunshine</p>
+    </footer>
+
+    <script>
+        // update sensor data
+        function updateSensorData() {
+            $.get("/sensor_data", function(sensor_data) {
+                $('#temperature').text('Temperature: ' + sensor_data.temperature + '°C');
+                $('#humidity').text('Humidity: ' + sensor_data.humidity + '%');
+                $('#moisture').text('Moisture: ' + sensor_data.moisture + '%');
+                $('#light').text('Light: ' + sensor_data.light + '%');
+            });
+        }
+
+        // placeholder, update image plant cam
+        function updateImage() {
+
+        }
+
+        // set intervals for update time (ms)
+        setInterval(updateSensorData, 5000);
+        setInterval(updateImage, 60000);
+    </script>
+
+</body>
+</html>

@@ -4,8 +4,9 @@ import serial
 import time
 import logging
 from datetime import datetime
+import sys
 
-# app = Flask(__name__)
+app = Flask(__name__)
 
 # Logger setup
 timestamp = datetime.now().strftime("_%Y%m%d_%H%M%S")
@@ -15,7 +16,7 @@ console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 console_handler.setFormatter(formatter)
-logger.addHandler(console_handler) 
+logger.addHandler(console_handler)
 
 # Initialize connection to board and wait for stable connection
 def initialize_board_connection(serialPort, baudRate, delay, timeout):
@@ -36,6 +37,7 @@ def initialize_board_connection(serialPort, baudRate, delay, timeout):
             return serialPort
         if time.time() - start_time > timeout:
             logger.info("Timeout: No response from Arduino.")
+            sys.exit()
             return None
         
 # Function to request Arduino to change MUX address
@@ -83,29 +85,32 @@ def reset_serial_buffer(serialPort):
 
 
 # Route to display JSON data on a webpage
-# @app.route('/')
-# def index():
-#     select_address("TBD")
-#     data = request_data()  # Get the data from the JSON file
-#     if data:
-#         return render_template('index.html', data=data)
-#     else:
-#         return "Error loading data", 500
+@app.route('/')
+def index():
+    data = request_data(serialPortArd)  # Read JSON data from serial
+    if data:
+        return render_template('index.html', sensor_data=data)
+    else:
+        return "ERROR"
+    
+# Route to fetch new JSON data
+@app.route('/sensor_data')
+def get_data():
+    data = request_data(serialPortArd)  # Read JSON data from serial
+    if data:
+        return data  # if JSON data exists, return
+    else:
+        return json.dumps({'error': 'No data available'})
 
 if __name__ == "__main__":
-    # app.run(debug=True)
-
     # Serial Port Address and Settings
     comPort = "/dev/cu.usbserial-1420"
     baudRate = 9600
-
     serialPortArd = initialize_board_connection(comPort, baudRate, delay=3, timeout=5)
-    # reset_serial_buffer(serialPortArd)
     # select_address(ardPort, "TBD")
-    # while serialPortArd.in_waiting > 0:
-    #     response = serialPortArd.readline().decode('utf-8').strip()  # Read the response
-    #     print(response)
-    data = request_data(serialPortArd)
-    data = request_data(serialPortArd)
-    data = request_data(serialPortArd)
-    # print(data)
+    # data = request_data(serialPortArd)
+    # data = request_data(serialPortArd)
+    # data = request_data(serialPortArd)
+
+    # Run flask
+    app.run(debug=True)
